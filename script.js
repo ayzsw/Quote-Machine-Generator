@@ -3,51 +3,62 @@ const authorName = document.getElementById('authorName');
 const newQuoteBtn = document.getElementById('newQuoteBtn');
 const twitterBtn = document.getElementById('twitterBtn');
 
-// Функция получения цитаты
+// Блокируем переход по кнопке твиттера (чтобы не переходила)
+twitterBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+});
+
 async function getQuote() {
-    // Добавляем параметр ?t=TIMESTAMP, чтобы обойти кэш браузера
-    const url = `https://api.allorigins.win/raw?url=https://zenquotes.io/api/random?t=${new Date().getTime()}`;
+    // Используем другой API (Quotable), он выдает случайные цитаты без повторов
+    // Добавляем случайное число в конец для 100% обхода кэша
+    const url = `https://api.quotable.io/random?nocache=${Math.random()}`;
     
     try {
-        // Показываем, что идет загрузка
-        newQuoteBtn.disabled = true;
-        newQuoteBtn.style.opacity = '0.5';
-
+        // Визуальный эффект нажатия
+        newQuoteBtn.style.transform = 'scale(0.8)';
+        
         const response = await fetch(url);
         
-        if (!response.ok) throw new Error("Network response was not ok");
-        
+        if (!response.ok) {
+            // Если первый API не ответил, используем запасной (Advice Slip)
+            throw new Error('API Error');
+        }
+
         const data = await response.json();
         
-        const text = data[0].q;
-        const author = data[0].a;
-
-        // Анимация: убираем старый текст
+        // Плавная смена текста
         quoteText.style.opacity = '0';
-        
+        authorName.style.opacity = '0';
+
         setTimeout(() => {
-            quoteText.innerText = text;
-            authorName.innerText = author;
+            quoteText.innerText = data.content; // Сама цитата
+            authorName.innerText = data.author;  // Автор
             
-            // Ссылка для Twitter
-            twitterBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + " - " + author)}`;
-            
-            // Возвращаем видимость
             quoteText.style.opacity = '1';
-            newQuoteBtn.disabled = false;
-            newQuoteBtn.style.opacity = '1';
+            authorName.style.opacity = '1';
+            newQuoteBtn.style.transform = 'scale(1)';
         }, 300);
 
     } catch (error) {
-        quoteText.innerText = "Упс! Ошибка соединения. Нажми еще раз.";
-        console.error("Error fetching quote:", error);
-        newQuoteBtn.disabled = false;
-        newQuoteBtn.style.opacity = '1';
+        // Если основной API упал (такое бывает из-за санкций или перегрузки), 
+        // используем второй вариант:
+        fetch('https://api.adviceslip.com/advice')
+            .then(res => res.json())
+            .then(data => {
+                quoteText.innerText = data.slip.advice;
+                authorName.innerText = "Unknown Advisor";
+                quoteText.style.opacity = '1';
+                authorName.style.opacity = '1';
+            });
+        console.log("Запасной вариант загружен");
     }
 }
 
-// Слушатель событий для кнопки
+// Слушатель событий
 newQuoteBtn.addEventListener('click', getQuote);
+
+// Загрузка при старте
+getQuote();
 
 // Загрузка первой цитаты при старте
 getQuote();
