@@ -56,7 +56,7 @@ Quote-Machine-Generator/
 
 ## 🎨 Design and Inspiration
 This project's design prototype and presentation materials can be found here:
-- [Figma Link](#) <!-- Add your Figma design link here -->
+- https://www.figma.com/community/file/1479432337106303005/quote-machine-generator
 - [Presentation Link](#) <!-- Add your presentation link here -->
 
 ## 👤 Author
