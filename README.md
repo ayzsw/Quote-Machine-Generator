@@ -2,7 +2,7 @@
 
 ## 🖥️ Demo
 
-[Link to Live Demo](#) <!-- Add your demo link here -->
+[[Link to Live Demo](#) <!-- Add your demo link here -->](https://ayzsw.github.io/Quote-Machine-Generator/)
 
 ## 📖 Overview
 
